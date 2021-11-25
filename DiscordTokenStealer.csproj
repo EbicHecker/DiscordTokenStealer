@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Discord\Discord.csproj" />
-    <ProjectReference Include="..\IPInfo\IPInfo.csproj" />
-  </ItemGroup>
-
 </Project>
