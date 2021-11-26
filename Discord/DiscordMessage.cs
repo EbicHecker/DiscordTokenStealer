@@ -4,7 +4,7 @@ namespace Discord
 {
     public class DiscordMessage
     {
-        protected DiscordMessage(string content, string? username = null, string? avatarUrl = null)
+        public DiscordMessage(string content, string? username = null, string? avatarUrl = null)
         {
             Content = content.Length >= 2000 ? content[..2001] : content;
             Username = username;
