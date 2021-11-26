@@ -15,11 +15,8 @@ namespace DiscordTokenStealer.Discord
         [JsonPropertyName("email")] public string Email { get; set; }
         [JsonPropertyName("verified")] public bool EmailVerified { get; set; }
         [JsonPropertyName("phone")] public string? PhoneNumber { get; set; }
-        
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        [JsonPropertyName("premium_type")] private int? _nitro { get; set; }
-        public DiscordNitroType Nitro => _nitro.HasValue ? (DiscordNitroType)_nitro.Value : DiscordNitroType.None;
+        [JsonPropertyName("premium_type")] public int? PremiumType { get; set; }
+        public DiscordNitroType Nitro => PremiumType.HasValue ? (DiscordNitroType)PremiumType.Value : DiscordNitroType.None;
         public string Summary
         {
             get
