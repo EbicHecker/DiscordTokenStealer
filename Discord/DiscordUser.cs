@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
+#pragma warning disable 8618
 
 namespace DiscordTokenStealer.Discord
 {
@@ -14,15 +15,11 @@ namespace DiscordTokenStealer.Discord
         [JsonPropertyName("email")] public string Email { get; set; }
         [JsonPropertyName("verified")] public bool EmailVerified { get; set; }
         [JsonPropertyName("phone")] public string? PhoneNumber { get; set; }
-        [JsonPropertyName("premium_type")] public int? _nitro { get; set; }
-        public DiscordNitroType Nitro
-        {
-            get
-            {
-                return _nitro.HasValue ? (DiscordNitroType)_nitro.Value : DiscordNitroType.None;
-            }
-        }
-
+        
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        [JsonPropertyName("premium_type")] private int? _nitro { get; set; }
+        public DiscordNitroType Nitro => _nitro.HasValue ? (DiscordNitroType)_nitro.Value : DiscordNitroType.None;
         public string Summary
         {
             get
