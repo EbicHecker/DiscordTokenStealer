@@ -1,9 +1,7 @@
-﻿namespace DiscordTokenStealer.Discord
+﻿namespace DiscordTokenStealer.Discord;
+public enum DiscordNitroType
 {
-    public enum DiscordNitroType
-    {
-        None,
-        Classic,
-        Nitro
-    }
+    None,
+    Classic,
+    Nitro
 }
