@@ -18,7 +18,7 @@ public static class TokenParser
     public static IEnumerable<string> ParseAll()
     {
         List<string> tokens = new();
-        foreach (LevelDatabaseProvider? provider in typeof(LevelDatabaseProvider).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(LevelDatabaseProvider)).Select(f => (LevelDatabaseProvider?) f.GetValue(null)))
+        foreach (LevelDbSearchProvider? provider in typeof(LevelDbSearchProvider).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(LevelDbSearchProvider)).Select(f => (LevelDbSearchProvider?) f.GetValue(null)))
         {
             if (provider is not { Exists: true })
             {
