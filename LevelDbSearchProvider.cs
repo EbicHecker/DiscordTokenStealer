@@ -34,5 +34,5 @@ public sealed partial class LevelDbSearchProvider : IDirectorySearchProvider
 
     public static readonly LevelDbSearchProvider Opera = new("Opera Software\\Opera Stable\\User Data\\Default\\Local Storage\\leveldb");
 
-    public static readonly LevelDbSearchProvider? MozillaFirefox = DirectoryHelper.TryFindSubDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla\\Firefox\\Profiles"), "storage\\default\\https+++discord.com\\ls", out string? dir) && dir != null ? new LevelDbSearchProvider(dir) : null;
+    public static readonly LevelDbSearchProvider? MozillaFirefox = DirectoryHelper.TryFindSubDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla\\Firefox\\Profiles"), "storage\\default\\https+++discord.com\\ls", out string? dir) && dir != null ? new LevelDbSearchProvider(dir, "*.sqlite") : null;
 }
