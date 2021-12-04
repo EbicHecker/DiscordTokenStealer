@@ -5,7 +5,7 @@ public partial class LevelDatabaseProvider
 {
     public readonly string Location;
     public readonly string SearchPattern;
-    public bool Exists => Directory.Exists(Location);
+    public readonly bool Exists;
     private static LevelDatabaseProvider? TryFind(string baseDir, string toFind, string searchPattern)
     {
         if (DirectoryHelper.TryFindSubDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), baseDir), toFind, out string? dir) && dir != null)
@@ -19,6 +19,7 @@ public partial class LevelDatabaseProvider
     {
         Location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), path);
         SearchPattern = searchPattern;
+        Exists = Directory.Exists(Location);
     }
 }
 
