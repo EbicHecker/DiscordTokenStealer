@@ -2,7 +2,7 @@
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed partial class LevelDbSearchProvider : IDirectorySearchProvider
+public sealed partial class LevelDbSearchProvider : IDirectorySearchProvider // AppDataSearchProvider?
 {
     public string Location { get; }
 

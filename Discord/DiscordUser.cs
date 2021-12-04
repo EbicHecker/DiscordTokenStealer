@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordUser
 {
     [JsonPropertyName("username")] public string Username { get; set; }
