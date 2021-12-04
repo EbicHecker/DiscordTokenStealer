@@ -12,15 +12,6 @@ public class TokenParser
 
     public static List<string> ParseAll()
     {
-        List<string> tokens = new();
-        foreach (FieldInfo field in typeof(DiscordClientType).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(DiscordClientType)))
-        {
-            if (field.GetValue(null) is DiscordClientType client)
-            {
-                tokens.AddRange(ParseFrom(client.LevelDatabase));
-            }
-        }
-        return tokens;
+        return SmartEnum<DiscordClientType>.GetMembers().SelectMany(client => ParseFrom(client.LevelDatabase)).Distinct().ToList();
     }
-
 }

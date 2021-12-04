@@ -20,14 +20,6 @@ public static class IPInfo
             address.AddressFamily == AddressFamily.InterNetwork);
     }
 
-    /*
-    private static async Task<IPAddress> GetLocalIPv6()
-    {
-        return (await Dns.GetHostEntryAsync(Dns.GetHostName())).AddressList.First(address =>
-            address.AddressFamily == AddressFamily.InterNetworkV6);
-    }
-    */
-
     public static async Task<IPAddress> GetAddress(bool preferlocal = false)
     {
         IPAddress local = await GetLocalIPv4();

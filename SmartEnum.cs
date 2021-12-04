@@ -1,6 +1,21 @@
-﻿namespace DiscordTokenStealer;
+﻿using System.Reflection;
+
+namespace DiscordTokenStealer;
 public partial class SmartEnum<T> where T : class
 {
+    public static List<T> GetMembers()
+    {
+        List<T> members = new();
+        foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(T)))
+        {
+            if (field.GetValue(null) is T member)
+            {
+                members.Add(member);
+            }
+        }
+        return members;
+    }
+
     private static int _count = 0; // Default enum value
 }
 
