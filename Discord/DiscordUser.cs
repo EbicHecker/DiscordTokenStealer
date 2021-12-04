@@ -24,5 +24,5 @@ public class DiscordUser
                 .AppendLine($"\t\tTwo-Factor: {TwoFactor}")
                 .AppendLine($"\t\tAbout Me: {AboutMe}")
                 .AppendLine($"\t\tNitro: {(PremiumType.HasValue ? (DiscordNitroType)PremiumType.Value : DiscordNitroType.None)}")
-                .AppendLine().ToString();
+                .ToString();
 }
