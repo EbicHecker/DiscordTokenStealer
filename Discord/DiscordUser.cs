@@ -14,7 +14,9 @@ public class DiscordUser
     [JsonPropertyName("verified")] public bool EmailVerified { get; set; }
     [JsonPropertyName("phone")] public string? PhoneNumber { get; set; }
     [JsonPropertyName("premium_type")] public int? PremiumType { get; set; }
-    public string Summary => new StringBuilder()
+    public override string ToString()
+    {
+        return new StringBuilder()
                 .AppendLine($"\tSummary:")
                 .AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})")
                 .AppendLine($"\t\tEmail: {Email}")
@@ -24,5 +26,6 @@ public class DiscordUser
                 .AppendLine($"\t\tTwo-Factor: {TwoFactor}")
                 .AppendLine($"\t\tAbout Me: {AboutMe}")
                 .AppendLine($"\t\tNitro: {(PremiumType.HasValue ? (DiscordNitroType)PremiumType.Value : DiscordNitroType.None)}")
-                .AppendLine().ToString();
+                .ToString();
+    }
 }

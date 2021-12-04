@@ -28,7 +28,7 @@ public static class Program
         lock (sb)
         {
             sb.AppendLine($"\t{token}");
-            sb.AppendLine(user.Summary);
+            sb.AppendLine(user.ToString());
         }
     }
 }
