@@ -27,6 +27,8 @@ public partial class LevelDatabaseProvider
     #region Discord Clients
     public static readonly LevelDatabaseProvider Discord = new("discord\\Local Storage\\leveldb");
 
+    public static readonly LevelDatabaseProvider DiscordPTB = new("discordptb\\Local Storage\\leveldb");
+
     public static readonly LevelDatabaseProvider DiscordCanary = new("discordcanary\\Local Storage\\leveldb");
     #endregion
 
