@@ -1,7 +1,7 @@
 <h1>Discord Token Stealer</h1>
 
 <figure>
-    <figcaption>Yoinks tokens from:</figcaption>
+    <figcaption><h4>Yoinks tokens from:</h4></figcaption>
     <ul>
       <li>Discord</li>
       <li>DiscordPTB</li>
@@ -16,7 +16,7 @@
 </figure>
 
 <figure>
-    <figcaption>Not only that, but it also grabs:</figcaption>
+    <figcaption><h4>Not only that, but it also grabs:</h4></figcaption>
     <ul>
       <li>PC Username</li>
       <li>Machine Name</li>
