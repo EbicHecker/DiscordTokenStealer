@@ -1,4 +1,4 @@
-<h1>Discord Token Stealer</h1>
+<h1>Discord Token Grabber</h1>
 
 <figure>
     <figcaption><h4>Yoinks tokens from:</h4></figcaption>
