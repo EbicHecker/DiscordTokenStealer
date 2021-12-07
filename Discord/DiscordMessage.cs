@@ -2,7 +2,7 @@
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed class DiscordMessage
+public class DiscordMessage
 {
     public DiscordMessage(string content, string? username = null, string? avatarUrl = null)
     {

