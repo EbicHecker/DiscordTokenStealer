@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 
 namespace DiscordTokenStealer.Discord;
-
 public class DiscordClient : IDisposable
 {
     private readonly string _token;
@@ -42,7 +41,6 @@ public class DiscordClient : IDisposable
         await using Stream json = await response.Content.ReadAsStreamAsync(cts);
         return await JsonSerializer.DeserializeAsync<DiscordUser>(json, (JsonSerializerOptions?)null, cts);
     }
-
 
     public void Dispose()
     {

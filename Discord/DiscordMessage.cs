@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
-
 public class DiscordMessage
 {
     public DiscordMessage(string content, string? username = null, string? avatarUrl = null)

