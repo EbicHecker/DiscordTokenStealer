@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordMessage
 {
     public DiscordMessage(string content, string? username = null, string? avatarUrl = null)
@@ -10,12 +11,7 @@ public class DiscordMessage
         AvatarUrl = avatarUrl;
     }
 
-    public DiscordMessage()
-    {
-
-    }
-
-    [JsonPropertyName("content")] public string Content { get; init; }
-    [JsonPropertyName("username")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Username { get; init; }
-    [JsonPropertyName("avatar_url")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? AvatarUrl { get; init; }
+    [JsonPropertyName("content")] [JsonInclude] public string Content { get; private set; }
+    [JsonPropertyName("username")] [JsonInclude] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Username { get; private set; }
+    [JsonPropertyName("avatar_url")] [JsonInclude] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? AvatarUrl { get; private set; }
 }

