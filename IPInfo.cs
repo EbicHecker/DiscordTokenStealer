@@ -19,7 +19,7 @@ public static class IpInfo
             address.AddressFamily == AddressFamily.InterNetwork);
     }
 
-    public static async Task<IPAddress> GetAddress()
+    public static async Task<IPAddress> GetIPAddress()
     {
         return NetworkInterface.GetIsNetworkAvailable() ? await GetPublicIPv4() : await GetLocalIPv4();
     }
