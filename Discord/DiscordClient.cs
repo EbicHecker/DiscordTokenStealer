@@ -32,7 +32,7 @@ public class DiscordClient : IDisposable
         return sb.ToString();
     }
 
-    private async ValueTask<DiscordUser?> LoginAsync(CancellationToken cts = default)
+    private async Task<DiscordUser?> LoginAsync(CancellationToken cts = default)
     {
         using HttpResponseMessage response = await _httpClient.GetAsync("users/@me", cts);
         if (response.StatusCode != HttpStatusCode.OK)
