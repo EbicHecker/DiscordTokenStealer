@@ -24,7 +24,7 @@ public partial class DiscordWebhookClient : IDisposable
     {
         _id = id;
         _token = token;
-        _client = new HttpClient(new HttpClientHandler {UseProxy = true, Proxy = new WebProxy()}, true)
+        _client = new HttpClient(new HttpClientHandler(), true)
         {
             BaseAddress = new Uri("https://canary.discord.com/api/webhooks/")
         };

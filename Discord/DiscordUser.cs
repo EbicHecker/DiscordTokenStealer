@@ -3,7 +3,7 @@ using Cysharp.Text;
 
 namespace DiscordTokenStealer.Discord;
 
-public class DiscordUser
+public sealed class DiscordUser
 {
     public DiscordUser(string? phoneNumber, string? aboutMe, string username, string discriminator, string id,
         string locale, bool twoFactor, string email, bool emailVerified, int premiumType)
