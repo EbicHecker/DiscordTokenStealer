@@ -11,7 +11,13 @@ public class DiscordMessage
         AvatarUrl = avatarUrl;
     }
 
-    [JsonPropertyName("content")] [JsonInclude] public string Content { get; private set; }
-    [JsonPropertyName("username")] [JsonInclude] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Username { get; private set; }
-    [JsonPropertyName("avatar_url")] [JsonInclude] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? AvatarUrl { get; private set; }
+    [JsonPropertyName("content")] public string Content { get; }
+
+    [JsonPropertyName("username")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Username { get; }
+
+    [JsonPropertyName("avatar_url")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AvatarUrl { get; }
 }

