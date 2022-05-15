@@ -25,7 +25,7 @@
 
 <h2>TODO:</h2>
 <ul>
-    <li>Use something like <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing">Microsoft.Extensions.FileSystemGlobbing</a> for locating potentially vulnerable files, this would avoid hardcoded paths and would increase the possibilities.</li>
+    <li>Use something like <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing">Microsoft.Extensions.FileSystemGlobbing</a> for finding potentially vulnerable files, this would avoid hardcoded paths and would increase the possibilities.</li>
 </ul>
 
 <h2>Preview:</h2>
