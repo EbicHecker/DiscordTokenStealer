@@ -33,7 +33,7 @@
         Downgrade .NET Version or move to a native/more supported programming language. 
         Current version requires the .NET 6.0 runtime to be installed.
     </li>
-    <li>Obfuscation (ex: String Encryption, Compressor, Renaming, etc.) to avoid detection.</li>
+    <li>Obfuscation (ex: String Encryption, Packer, Renaming, etc.) to avoid detection.</li>
 </ul>
 
 <h2>Preview:</h2>
