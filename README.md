@@ -1,4 +1,5 @@
-<h1>Discord Token Stealer</h1>
+# OUTDATED
+<h2>Discord Token Stealer</h1>
 
 <figure>
     <figcaption><h3>Grabs</h3></figcaption>
@@ -23,7 +24,7 @@
     </ul>
 </figure>
 
-<h2>TODO:</h2>
+<h3>TODO:</h2>
 <ul>
     <li>
         Use something like <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing">Microsoft.Extensions.FileSystemGlobbing</a> for finding potentially vulnerable files, instead of relying upon hardcoded paths.
@@ -36,7 +37,7 @@
     <li>Obfuscation (ex: String Encryption, Packer, Renaming, etc.) to avoid detection.</li>
 </ul>
 
-<h2>Preview:</h2>
+<h3>Preview:</h2>
 <p align="left">
   <img src="https://i.imgur.com/QA20fHd.png" height=250 width=600 title="Windows">
 </p>
